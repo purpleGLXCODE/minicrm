@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniCRM</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:#0f1115;color:#e8eaf0}
+.header{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid #252932;background:#15171c}
+.logo{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700}.logo span{color:#858b99;font-weight:500}
+.logo-mark{width:34px;height:34px;border-radius:9px;background:#4f7cff;display:flex;align-items:center;justify-content:center}
+button{cursor:pointer}.add-button{border:0;background:#4f7cff;color:#fff;padding:11px 18px;border-radius:8px;font-weight:600}
+.content{padding:30px 32px;max-width:1500px;margin:auto}
+.top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:25px}
+.title{margin:0;font-size:28px}.subtitle{margin-top:7px;color:#777e8c;font-size:14px}
+.stats{display:flex;gap:12px}.stat{min-width:110px;padding:14px 18px;background:#171a20;border:1px solid #272b34;border-radius:10px}
+.stat-value{font-size:22px;font-weight:700}.stat-label{margin-top:3px;font-size:12px;color:#737a88}
+.toolbar{display:flex;gap:10px;margin-bottom:15px}.filter{border:1px solid #2a2e37;background:#171a20;color:#aeb4c0;padding:9px 14px;border-radius:7px;font-size:13px}
+.filter:hover,.filter.active{border-color:#4f7cff;color:#fff}.filter.active{background:#26365f}
+.table-wrap{background:#15181d;border:1px solid #272b34;border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse}thead{background:#191c22}th{text-align:left;padding:14px 18px;color:#737a88;font-size:12px;text-transform:uppercase}
+td{padding:17px 18px;border-top:1px solid #242831;font-size:14px}tbody tr{cursor:pointer}tbody tr:hover{background:#1b1f26}
+.id{color:#6f7786}.name{font-weight:600}.contact,.request{color:#aeb4c0}.request{max-width:420px}
+.source{display:inline-flex;align-items:center;gap:6px}.source-dot{width:7px;height:7px;border-radius:50%;background:#4f7cff}.source.manual .source-dot{background:#9b7cff}
+.tags{display:flex;flex-wrap:wrap;gap:5px}.tag{padding:4px 8px;border-radius:5px;background:#242934;color:#aeb7c7;font-size:11px;font-weight:600}
+.tag.hot{background:#482a2a;color:#ff8d8d}.tag.ai{background:#2c2949;color:#b3a4ff}.tag.telegram{background:#21384b;color:#71c7ff}.tag.new{background:#263c30;color:#7ddd9e}
+.empty{display:none;padding:70px;text-align:center;color:#6f7684}
+@media(max-width:900px){.header,.content{padding-left:18px;padding-right:18px}.top{display:block}.stats{margin-top:20px}.table-wrap{overflow-x:auto}table{min-width:900px}}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="logo"><div class="logo-mark">M</div>MiniCRM <span>agency</span></div>
+<button class="add-button" onclick="addLead()">+ Добавить лид</button>
+</header>
+
+<main class="content">
+<div class="top">
+<div><h1 class="title">Лиды</h1><div class="subtitle">Заявки агентства в одном месте</div></div>
+<div class="stats">
+<div class="stat"><div class="stat-value" id="totalCount">3</div><div class="stat-label">Всего лидов</div></div>
+<div class="stat"><div class="stat-value">2</div><div class="stat-label">Telegram</div></div>
+</div>
+</div>
+
+<div class="toolbar">
+<button class="filter active" onclick="filterLeads('all',this)">Все</button>
+<button class="filter" onclick="filterLeads('telegram',this)">Telegram</button>
+<button class="filter" onclick="filterLeads('hot',this)">Hot</button>
+<button class="filter" onclick="filterLeads('ai',this)">AI</button>
+<button class="filter" onclick="filterLeads('new',this)">New</button>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>ID</th><th>Имя</th><th>Контакт</th><th>Запрос</th><th>Источник</th><th>Дата</th><th>Теги</th></tr></thead>
+<tbody id="leadsTable">
+<tr data-tags="telegram hot"><td class="id">#103</td><td class="name">Анна Петрова</td><td class="contact">@anna</td><td class="request">Нужен сайт для компании</td><td><span class="source"><span class="source-dot"></span>Telegram</span></td><td>01.10.2026 15:42</td><td><div class="tags"><span class="tag telegram">telegram</span><span class="tag hot">hot</span></div></td></tr>
+<tr data-tags="ai"><td class="id">#102</td><td class="name">Иван Сидоров</td><td class="contact">+7 999 123-45-67</td><td class="request">Хотим автоматизировать продажи</td><td><span class="source manual"><span class="source-dot"></span>Manual</span></td><td>01.10.2026 14:18</td><td><div class="tags"><span class="tag ai">ai</span></div></td></tr>
+<tr data-tags="telegram new"><td class="id">#101</td><td class="name">Сергей Волков</td><td class="contact">@sergey</td><td class="request">Интересует разработка Telegram Mini App</td><td><span class="source"><span class="source-dot"></span>Telegram</span></td><td>01.10.2026 12:56</td><td><div class="tags"><span class="tag telegram">telegram</span><span class="tag new">new</span></div></td></tr>
+</tbody>
+</table>
+<div class="empty" id="empty">Лидов с таким тегом нет</div>
+</div>
+</main>
+
+<script>
+function filterLeads(tag,button){
+document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));
+button.classList.add('active');
+let visible=0;
+document.querySelectorAll('#leadsTable tr').forEach(row=>{
+const tags=row.dataset.tags.split(' ');
+const show=tag==='all'||tags.includes(tag);
+row.style.display=show?'':'none';
+if(show)visible++;
+});
+document.getElementById('empty').style.display=visible?'none':'block';
+}
+function addLead(){alert('Форма добавления лида появится на следующем этапе.');}
+</script>
+</body>
+</html>
