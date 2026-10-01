@@ -1,6 +1,5 @@
 fastapi
 uvicorn[standard]
 aiogram
-sqlalchemy
-asyncpg
-pydantic-settings
+psycopg[binary]
+python-dotenv
