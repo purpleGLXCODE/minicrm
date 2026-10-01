@@ -1,5 +1,5 @@
 """Minimal PostgreSQL schema for MiniCRM."""
-
+"""'MINICRM_CHANGE_ME';"""
 CREATE_TABLES = """
 CREATE TABLE IF NOT EXISTS leads (
     id BIGSERIAL PRIMARY KEY,
