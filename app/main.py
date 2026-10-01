@@ -2,9 +2,7 @@
 
 from fastapi import FastAPI
 
+from .api import router
+
 app = FastAPI(title="MiniCRM")
-
-
-@app.get("/api/health")
-def health():
-    return {"status": "ok"}
+app.include_router(router)
