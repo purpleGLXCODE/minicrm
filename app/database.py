@@ -1,23 +1,39 @@
-"""PostgreSQL database foundation for MiniCRM."""
+"""Minimal PostgreSQL connection for MiniCRM."""
 
 import os
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+import psycopg
+from dotenv import load_dotenv
+from psycopg.rows import dict_row
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+psycopg2://minicrm:password@127.0.0.1:5432/minicrm",
+load_dotenv()
+
+
+db = psycopg.connect(
+    host=os.getenv("DB_HOST"),
+    dbname=os.getenv("DB_NAME"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASS"),
+    port=os.getenv("DB_PORT"),
+    row_factory=dict_row,
 )
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+db.autocommit = True
 
 
-class Base(DeclarativeBase):
-    pass
+def sql(query, args=None):
+    with db.cursor() as cur:
+        cur.execute(query, args or [])
+        return cur
 
 
-def init_db():
-    from .models import Lead, Tag, LeadTag  # noqa: F401
-    Base.metadata.create_all(bind=engine)
+def one(query, args=None):
+    with db.cursor() as cur:
+        cur.execute(query, args or [])
+        return cur.fetchone()
+
+
+def all(query, args=None):
+    with db.cursor() as cur:
+        cur.execute(query, args or [])
+        return cur.fetchall()
