@@ -1,0 +1,1 @@
+.env  rm --cached .envgit add .gitignoregit commit -m "Ignore env file"git push
