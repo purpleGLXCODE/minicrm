@@ -6,11 +6,18 @@
 <title>MiniCRM</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial,sans-serif;background:#0f1115;color:#e8eaf0}
+html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:#0f1115;color:#e8eaf0}
+body{overflow-x:hidden}
+.app-shell{min-height:100vh;transition:transform .28s ease}
 .header{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid #252932;background:#15171c}
 .logo{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700}.logo span{color:#858b99;font-weight:500}
 .logo-mark{width:34px;height:34px;border-radius:9px;background:#4f7cff;display:flex;align-items:center;justify-content:center}
-button{cursor:pointer}.add-button{border:0;background:#4f7cff;color:#fff;padding:11px 18px;border-radius:8px;font-weight:600}
+button{cursor:pointer}.add-button{border:0;background:#4f7cff;color:#fff;padding:11px 18px;border-radius:8px;font-weight:600;display:flex;align-items:center;gap:8px}
+.add-button:disabled{opacity:.7;cursor:default}
+.button-spinner,.form-spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite}
+.form-spinner{display:none;width:15px;height:15px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 .content{padding:30px 32px;max-width:1500px;margin:auto}
 .top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:25px}
 .title{margin:0;font-size:28px}.subtitle{margin-top:7px;color:#777e8c;font-size:14px}
@@ -26,21 +33,44 @@ td{padding:17px 18px;border-top:1px solid #242831;font-size:14px}tbody tr{cursor
 .tags{display:flex;flex-wrap:wrap;gap:5px}.tag{padding:4px 8px;border-radius:5px;background:#242934;color:#aeb7c7;font-size:11px;font-weight:600}
 .tag.hot{background:#482a2a;color:#ff8d8d}.tag.ai{background:#2c2949;color:#b3a4ff}.tag.telegram{background:#21384b;color:#71c7ff}.tag.new{background:#263c30;color:#7ddd9e}
 .empty{display:none;padding:70px;text-align:center;color:#6f7684}
-@media(max-width:900px){.header,.content{padding-left:18px;padding-right:18px}.top{display:block}.stats{margin-top:20px}.table-wrap{overflow-x:auto}table{min-width:900px}}
+
+/* side add panel */
+.drawer{position:fixed;z-index:20;top:0;right:0;width:440px;height:100vh;background:#15181d;border-left:1px solid #2a2e37;box-shadow:-20px 0 50px rgba(0,0,0,.25);transform:translateX(100%);transition:transform .28s ease;display:flex;flex-direction:column}
+.drawer.open{transform:translateX(0)}
+.drawer-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid #272b34}
+.drawer-title{font-size:18px;font-weight:700}.drawer-close{border:0;background:transparent;color:#8b93a2;font-size:26px;line-height:1;padding:4px 8px}.drawer-close:hover{color:#fff}
+.drawer-body{padding:24px;overflow:auto}
+.field{margin-bottom:18px}.field label{display:block;margin-bottom:8px;font-size:12px;color:#858d9c}
+.field input,.field textarea,.field select{width:100%;border:1px solid #2b303a;background:#101318;color:#e8eaf0;border-radius:8px;padding:11px 12px;font:inherit;outline:none}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:#4f7cff}
+.field textarea{min-height:130px;resize:vertical}
+.drawer-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:26px}
+.cancel-button{border:1px solid #2b303a;background:#1a1d23;color:#aeb4c0;padding:11px 18px;border-radius:8px}
+.save-button{border:0;background:#4f7cff;color:#fff;padding:11px 18px;border-radius:8px;font-weight:600;display:flex;align-items:center;gap:8px}
+.save-button:disabled{opacity:.7;cursor:default}
+.form-error{display:none;margin-top:14px;padding:10px 12px;border-radius:7px;background:#3a2020;color:#ff9a9a;font-size:13px}
+
+.drawer-open .app-shell{transform:translateX(-220px)}
+@media(max-width:900px){
+.header,.content{padding-left:18px;padding-right:18px}.top{display:block}.stats{margin-top:20px}.table-wrap{overflow-x:auto}table{min-width:900px}
+.drawer{width:min(440px,100vw)}.drawer-open .app-shell{transform:translateX(-40px)}
+}
 </style>
 </head>
 <body>
+
+<div class="app-shell">
 <header class="header">
 <div class="logo"><div class="logo-mark">M</div>MiniCRM <span>agency</span></div>
-<button class="add-button" onclick="addLead()">+ Добавить лид</button>
+<button class="add-button" id="addButton" onclick="addLead()"><span id="addButtonText">+ Добавить лид</span></button>
 </header>
 
 <main class="content">
 <div class="top">
 <div><h1 class="title">Лиды</h1><div class="subtitle">Заявки агентства в одном месте</div></div>
 <div class="stats">
-<div class="stat"><div class="stat-value" id="totalCount">3</div><div class="stat-label">Всего лидов</div></div>
-<div class="stat"><div class="stat-value">2</div><div class="stat-label">Telegram</div></div>
+<div class="stat"><div class="stat-value" id="totalCount">0</div><div class="stat-label">Всего лидов</div></div>
+<div class="stat"><div class="stat-value" id="telegramCount">0</div><div class="stat-label">Telegram</div></div>
 </div>
 </div>
 
@@ -55,30 +85,46 @@ td{padding:17px 18px;border-top:1px solid #242831;font-size:14px}tbody tr{cursor
 <div class="table-wrap">
 <table>
 <thead><tr><th>ID</th><th>Имя</th><th>Контакт</th><th>Запрос</th><th>Источник</th><th>Дата</th><th>Теги</th></tr></thead>
-<tbody id="leadsTable">
-<tr data-tags="telegram hot"><td class="id">#103</td><td class="name">Анна Петрова</td><td class="contact">@anna</td><td class="request">Нужен сайт для компании</td><td><span class="source"><span class="source-dot"></span>Telegram</span></td><td>01.10.2026 15:42</td><td><div class="tags"><span class="tag telegram">telegram</span><span class="tag hot">hot</span></div></td></tr>
-<tr data-tags="ai"><td class="id">#102</td><td class="name">Иван Сидоров</td><td class="contact">+7 999 123-45-67</td><td class="request">Хотим автоматизировать продажи</td><td><span class="source manual"><span class="source-dot"></span>Manual</span></td><td>01.10.2026 14:18</td><td><div class="tags"><span class="tag ai">ai</span></div></td></tr>
-<tr data-tags="telegram new"><td class="id">#101</td><td class="name">Сергей Волков</td><td class="contact">@sergey</td><td class="request">Интересует разработка Telegram Mini App</td><td><span class="source"><span class="source-dot"></span>Telegram</span></td><td>01.10.2026 12:56</td><td><div class="tags"><span class="tag telegram">telegram</span><span class="tag new">new</span></div></td></tr>
-</tbody>
+<tbody id="leadsTable"></tbody>
 </table>
 <div class="empty" id="empty">Лидов с таким тегом нет</div>
 </div>
 </main>
+</div>
 
-<script>
-function filterLeads(tag,button){
-document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));
-button.classList.add('active');
-let visible=0;
-document.querySelectorAll('#leadsTable tr').forEach(row=>{
-const tags=row.dataset.tags.split(' ');
-const show=tag==='all'||tags.includes(tag);
-row.style.display=show?'':'none';
-if(show)visible++;
-});
-document.getElementById('empty').style.display=visible?'none':'block';
-}
-function addLead(){alert('Форма добавления лида появится на следующем этапе.');}
-</script>
+<aside class="drawer" id="addDrawer">
+<div class="drawer-head">
+<div class="drawer-title">Новый лид</div>
+<button class="drawer-close" onclick="closeAddLead()" aria-label="Закрыть">×</button>
+</div>
+<form class="drawer-body" id="leadForm">
+<div class="field">
+<label for="leadName">Имя</label>
+<input id="leadName" name="name" required autocomplete="name">
+</div>
+<div class="field">
+<label for="leadContact">Контакт</label>
+<input id="leadContact" name="contact" required>
+</div>
+<div class="field">
+<label for="leadRequest">Запрос</label>
+<textarea id="leadRequest" name="request" required></textarea>
+</div>
+<div class="field">
+<label for="leadSource">Источник</label>
+<select id="leadSource" name="source">
+<option value="manual">Manual</option>
+<option value="telegram">Telegram</option>
+</select>
+</div>
+<div class="form-error" id="formError"></div>
+<div class="drawer-actions">
+<button type="button" class="cancel-button" onclick="closeAddLead()">Отмена</button>
+<button type="submit" class="save-button" id="saveButton"><span>Добавить</span><span class="form-spinner" id="formSpinner"></span></button>
+</div>
+</form>
+</aside>
+
+<script src="app.js"></script>
 </body>
 </html>
