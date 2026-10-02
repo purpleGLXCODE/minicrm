@@ -19,7 +19,7 @@ LEAD_SELECT = """
         l.created_at,
         COALESCE(
             (
-                SELECT array_agg(t.name ORDER BY t.name)
+                SELECT array_agg(t.name::text ORDER BY t.name)
                 FROM tags t
                 JOIN lead_tags lt ON lt.tag_id = t.id
                 WHERE lt.lead_id = l.id
@@ -90,7 +90,6 @@ def update_lead(lead_id: int, data: dict):
     """, [
         data["name"],
         data["contact"],
-        data["request"],
         data.get("source", "manual"),
         lead_id
     ])
