@@ -17,24 +17,24 @@ button{cursor:pointer}.add-button{border:0;background:#4f7cff;color:#fff;padding
 .button-spinner,.form-spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite}
 .form-spinner{display:none;width:15px;height:15px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
 .content{padding:30px 32px;max-width:1500px;margin:auto}
 .top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:25px}
 .title{margin:0;font-size:28px}.subtitle{margin-top:7px;color:#777e8c;font-size:14px}
 .stats{display:flex;gap:12px}.stat{min-width:110px;padding:14px 18px;background:#171a20;border:1px solid #272b34;border-radius:10px}
 .stat-value{font-size:22px;font-weight:700}.stat-label{margin-top:3px;font-size:12px;color:#737a88}
-.toolbar{display:flex;gap:10px;margin-bottom:15px}.filter{border:1px solid #2a2e37;background:#171a20;color:#aeb4c0;padding:9px 14px;border-radius:7px;font-size:13px}
+.toolbar{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}.filter{border:1px solid #2a2e37;background:#171a20;color:#aeb4c0;padding:9px 14px;border-radius:7px;font-size:13px}
 .filter:hover,.filter.active{border-color:#4f7cff;color:#fff}.filter.active{background:#26365f}
 .table-wrap{background:#15181d;border:1px solid #272b34;border-radius:12px;overflow:hidden}
 table{width:100%;border-collapse:collapse}thead{background:#191c22}th{text-align:left;padding:14px 18px;color:#737a88;font-size:12px;text-transform:uppercase}
-td{padding:17px 18px;border-top:1px solid #242831;font-size:14px}tbody tr{cursor:pointer}tbody tr:hover{background:#1b1f26}
+td{padding:17px 18px;border-top:1px solid #242831;font-size:14px}tbody tr:hover{background:#1b1f26}
 .id{color:#6f7786}.name{font-weight:600}.contact,.request{color:#aeb4c0}.request{max-width:420px}
 .source{display:inline-flex;align-items:center;gap:6px}.source-dot{width:7px;height:7px;border-radius:50%;background:#4f7cff}.source.manual .source-dot{background:#9b7cff}
 .tags{display:flex;flex-wrap:wrap;gap:5px}.tag{padding:4px 8px;border-radius:5px;background:#242934;color:#aeb7c7;font-size:11px;font-weight:600}
 .tag.hot{background:#482a2a;color:#ff8d8d}.tag.ai{background:#2c2949;color:#b3a4ff}.tag.telegram{background:#21384b;color:#71c7ff}.tag.new{background:#263c30;color:#7ddd9e}
+.actions{display:flex;gap:6px}.row-action{border:1px solid #2b303a;background:#1a1d23;color:#9da5b4;padding:6px 8px;border-radius:6px;font-size:12px}.row-action:hover{color:#fff;border-color:#4f7cff}.row-action.delete:hover{border-color:#a54b4b;color:#ff9a9a}
 .empty{display:none;padding:70px;text-align:center;color:#6f7684}
 
-/* side add panel */
+/* side panel */
 .drawer{position:fixed;z-index:20;top:0;right:0;width:440px;height:100vh;background:#15181d;border-left:1px solid #2a2e37;box-shadow:-20px 0 50px rgba(0,0,0,.25);transform:translateX(100%);transition:transform .28s ease;display:flex;flex-direction:column}
 .drawer.open{transform:translateX(0)}
 .drawer-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid #272b34}
@@ -44,15 +44,17 @@ td{padding:17px 18px;border-top:1px solid #242831;font-size:14px}tbody tr{cursor
 .field input,.field textarea,.field select{width:100%;border:1px solid #2b303a;background:#101318;color:#e8eaf0;border-radius:8px;padding:11px 12px;font:inherit;outline:none}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:#4f7cff}
 .field textarea{min-height:130px;resize:vertical}
+.tags-picker{display:flex;flex-wrap:wrap;gap:7px}.tag-choice{border:1px solid #2b303a;background:#101318;color:#9da5b4;padding:7px 10px;border-radius:7px;font-size:12px}.tag-choice.selected{border-color:#4f7cff;background:#26365f;color:#fff}
+.add-tag-row{display:none;gap:7px;margin-top:9px}.add-tag-row input{flex:1}.add-tag-row button{border:1px solid #2b303a;background:#1a1d23;color:#c2c8d2;border-radius:7px;padding:0 12px}
+.add-tag-link{margin-top:9px;border:0;background:transparent;color:#6f9bff;padding:0;font-size:12px}
 .drawer-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:26px}
 .cancel-button{border:1px solid #2b303a;background:#1a1d23;color:#aeb4c0;padding:11px 18px;border-radius:8px}
 .save-button{border:0;background:#4f7cff;color:#fff;padding:11px 18px;border-radius:8px;font-weight:600;display:flex;align-items:center;gap:8px}
 .save-button:disabled{opacity:.7;cursor:default}
 .form-error{display:none;margin-top:14px;padding:10px 12px;border-radius:7px;background:#3a2020;color:#ff9a9a;font-size:13px}
-
 .drawer-open .app-shell{transform:translateX(-220px)}
 @media(max-width:900px){
-.header,.content{padding-left:18px;padding-right:18px}.top{display:block}.stats{margin-top:20px}.table-wrap{overflow-x:auto}table{min-width:900px}
+.header,.content{padding-left:18px;padding-right:18px}.top{display:block}.stats{margin-top:20px}.table-wrap{overflow-x:auto}table{min-width:1050px}
 .drawer{width:min(440px,100vw)}.drawer-open .app-shell{transform:translateX(-40px)}
 }
 </style>
@@ -62,7 +64,7 @@ td{padding:17px 18px;border-top:1px solid #242831;font-size:14px}tbody tr{cursor
 <div class="app-shell">
 <header class="header">
 <div class="logo"><div class="logo-mark">M</div>MiniCRM <span>agency</span></div>
-<button class="add-button" id="addButton" onclick="addLead()"><span id="addButtonText">+ Добавить лид</span></button>
+<button class="add-button" id="addButton" onclick="openAddLead()"><span id="addButtonText">+ Добавить лид</span></button>
 </header>
 
 <main class="content">
@@ -74,28 +76,22 @@ td{padding:17px 18px;border-top:1px solid #242831;font-size:14px}tbody tr{cursor
 </div>
 </div>
 
-<div class="toolbar">
-<button class="filter active" onclick="filterLeads('all',this)">Все</button>
-<button class="filter" onclick="filterLeads('telegram',this)">Telegram</button>
-<button class="filter" onclick="filterLeads('hot',this)">Hot</button>
-<button class="filter" onclick="filterLeads('ai',this)">AI</button>
-<button class="filter" onclick="filterLeads('new',this)">New</button>
-</div>
+<div class="toolbar" id="toolbar"></div>
 
 <div class="table-wrap">
 <table>
-<thead><tr><th>ID</th><th>Имя</th><th>Контакт</th><th>Запрос</th><th>Источник</th><th>Дата</th><th>Теги</th></tr></thead>
+<thead><tr><th>ID</th><th>Имя</th><th>Контакт</th><th>Запрос</th><th>Источник</th><th>Дата</th><th>Теги</th><th></th></tr></thead>
 <tbody id="leadsTable"></tbody>
 </table>
-<div class="empty" id="empty">Лидов с таким тегом нет</div>
+<div class="empty" id="empty">Лидов не найдено</div>
 </div>
 </main>
 </div>
 
-<aside class="drawer" id="addDrawer">
+<aside class="drawer" id="leadDrawer">
 <div class="drawer-head">
-<div class="drawer-title">Новый лид</div>
-<button class="drawer-close" onclick="closeAddLead()" aria-label="Закрыть">×</button>
+<div class="drawer-title" id="drawerTitle">Новый лид</div>
+<button class="drawer-close" onclick="closeDrawer()" aria-label="Закрыть">×</button>
 </div>
 <form class="drawer-body" id="leadForm">
 <div class="field">
@@ -117,10 +113,19 @@ td{padding:17px 18px;border-top:1px solid #242831;font-size:14px}tbody tr{cursor
 <option value="telegram">Telegram</option>
 </select>
 </div>
+<div class="field">
+<label>Теги</label>
+<div class="tags-picker" id="tagsPicker"></div>
+<button type="button" class="add-tag-link" onclick="showNewTag()">+ Добавить тег</button>
+<div class="add-tag-row" id="addTagRow">
+<input id="newTagName" placeholder="Название тега">
+<button type="button" onclick="createTag()">Создать</button>
+</div>
+</div>
 <div class="form-error" id="formError"></div>
 <div class="drawer-actions">
-<button type="button" class="cancel-button" onclick="closeAddLead()">Отмена</button>
-<button type="submit" class="save-button" id="saveButton"><span>Добавить</span><span class="form-spinner" id="formSpinner"></span></button>
+<button type="button" class="cancel-button" onclick="closeDrawer()">Отмена</button>
+<button type="submit" class="save-button" id="saveButton"><span id="saveButtonText">Добавить</span><span class="form-spinner" id="formSpinner"></span></button>
 </div>
 </form>
 </aside>
