@@ -90,6 +90,7 @@ def update_lead(lead_id: int, data: dict):
     """, [
         data["name"],
         data["contact"],
+        data["request"],
         data.get("source", "manual"),
         lead_id
     ])
