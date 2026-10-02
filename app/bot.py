@@ -50,29 +50,38 @@ async def send_welcome(message: types.Message):
 
 @dp.message(Command("start"))
 async def start(message: types.Message):
-    users[message.from_user.id] = {"step": "name"}
+    users[message.from_user.id] = {"step": "request"}
     await send_welcome(message)
 
 
 @dp.callback_query(F.data == "begin")
 async def begin(callback: types.CallbackQuery):
-    users[callback.from_user.id] = {"step": "name"}
+    users[callback.from_user.id] = {"step": "request"}
 
     await callback.message.answer(
-        "Как вас зовут?"
+        "Что вас интересует?\n"
+        "Коротко опишите ваш запрос 👇"
     )
     await callback.answer()
 
 
-async def create_lead(user_id, data):
+async def create_lead(user, request):
+    username = user.username
+
+    if username:
+        contact = "@" + username
+    else:
+        contact = f"Telegram ID: {user.id}"
+
     async with aiohttp.ClientSession() as session:
         async with session.post(
             f"{CRM_API_URL}/leads",
             json={
-                "name": data["name"],
-                "contact": data["contact"],
-                "request": data["request"],
+                "name": user.full_name,
+                "contact": contact,
+                "request": request,
                 "source": "telegram",
+                "telegram_id": user.id,
             },
         ) as response:
             if response.status != 200:
@@ -85,37 +94,17 @@ async def message(message: types.Message):
     user_id = message.from_user.id
 
     if user_id not in users:
-        users[user_id] = {"step": "name"}
-        await message.answer("Как вас зовут?")
-        return
-
-    user = users[user_id]
-    text = message.text.strip()
-
-    if user["step"] == "name":
-        user["name"] = text
-        user["step"] = "contact"
+        users[user_id] = {"step": "request"}
         await message.answer(
-            "Отлично!\n\n"
-            "Как с вами связаться?\n"
-            "Telegram, телефон или email."
-        )
-        return
-
-    if user["step"] == "contact":
-        user["contact"] = text
-        user["step"] = "request"
-        await message.answer(
-            "И последний вопрос 👇\n\n"
             "Что вас интересует?\n"
-            "Коротко опишите ваш запрос."
+            "Коротко опишите ваш запрос 👇"
         )
         return
 
-    if user["step"] == "request":
-        user["request"] = text
+    if users[user_id]["step"] == "request":
+        request = message.text.strip()
 
-        if await create_lead(user_id, user):
+        if await create_lead(message.from_user, request):
             del users[user_id]
 
             await message.answer(
