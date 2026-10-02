@@ -286,7 +286,7 @@ function renderLeads() {
         row.innerHTML = `
             <td class="id">#${lead.id}</td>
             <td class="name">${escapeHtml(lead.name)}</td>
-            <td class="contact">${escapeHtml(lead.contact)}</td>
+            <td class="contact">${escapeHtml(lead.contact)}${lead.telegram_id ? '<span class="telegram-id">TG ID: ' + escapeHtml(lead.telegram_id) + '</span>' : ""}</td>
             <td class="request">${escapeHtml(lead.request)}</td>
             <td>
                 <span class="source ${lead.source === "manual" ? "manual" : ""}">
