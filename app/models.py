@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS leads (
     contact VARCHAR(255) NOT NULL,
     request TEXT NOT NULL,
     source VARCHAR(50) NOT NULL DEFAULT 'manual',
+    telegram_id BIGINT,
     created_at BIGINT NOT NULL
 );
 
