@@ -2,6 +2,12 @@
 
 Минимальный MVP CRM для заявок агентства.
 
+## Demo
+
+**Telegram Bot:** @minicrm_leads_bot
+
+**CRM:** http://107.189.18.133/
+
 ## Цель
 
 Собрать рабочий end-to-end контур без лишней инфраструктуры:
@@ -110,6 +116,9 @@ minicrm/
 │   ├── models.py
 │   ├── api.py
 │   └── bot.py
+│
+├── assets/
+│   └── bot_welcome.jpg
 │
 ├── requirements.txt
 ├── .env.example
