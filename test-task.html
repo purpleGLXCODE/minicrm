@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MiniCRM — тестовое задание</title>
+<style>
+:root{--bg:#0d0f13;--panel:#15181e;--line:#272c35;--text:#eef1f5;--muted:#929aa8;--accent:#6f8cff;--green:#73d59a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 Inter,Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:64px 24px 80px}
+header{padding-bottom:34px;border-bottom:1px solid var(--line);margin-bottom:38px}
+h1{font-size:38px;line-height:1.15;margin:0 0 10px}
+h2{font-size:23px;margin:42px 0 16px}
+h3{font-size:17px;margin:28px 0 10px}
+p{margin:10px 0;color:#d6dae1}
+.lead{font-size:19px;color:var(--muted)}
+ul{padding-left:22px}
+li{margin:5px 0}
+code{background:#1b1f27;padding:2px 6px;border-radius:5px}
+pre{background:#101319;border:1px solid var(--line);border-radius:10px;padding:18px;overflow:auto;color:#dce2eb}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.badge{display:inline-block;padding:5px 9px;border-radius:6px;background:#20362a;color:var(--green);font-size:12px;font-weight:700}
+.links a{color:#aab9ff;text-decoration:none}
+.links a:hover{text-decoration:underline}
+footer{margin-top:48px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+@media(max-width:650px){main{padding-top:38px}.grid{grid-template-columns:1fr}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="badge">Тестовое задание · MiniCRM</div>
+<h1>Мини-CRM для заявок агентства</h1>
+<p class="lead">Рабочий MVP: Telegram → API → PostgreSQL → Web CRM</p>
+</header>
+
+<h2>1. Набросок продукта</h2>
+<p>Задача — собрать простую CRM, в которую попадают заявки из разных источников и с которыми менеджер может работать из одного интерфейса.</p>
+<p>Основной сценарий MVP:</p>
+<pre>Telegram → заявка → API → PostgreSQL → CRM</pre>
+<p>Telegram-бот получает текст обращения. Имя и Telegram ID берутся автоматически из Telegram, username используется как контакт. Пользователю не задаются лишние вопросы — запрашивается только сам запрос.</p>
+
+<div class="card">
+<strong>Что входит в MVP</strong>
+<ul>
+<li>Telegram-бот для приёма заявок;</li>
+<li>автоматическое создание лида в PostgreSQL;</li>
+<li>имя, username и Telegram ID из Telegram;</li>
+<li>ручное добавление лида;</li>
+<li>редактирование и удаление;</li>
+<li>теги;</li>
+<li>фильтрация по тегам;</li>
+<li>отображение источника лида;</li>
+<li>рабочий Web-интерфейс CRM.</li>
+</ul>
+</div>
+
+<h3>Архитектура</h3>
+<pre>Telegram Bot ─────┐
+                  │
+Manual CRM ───────┼──→ FastAPI → PostgreSQL → Web CRM
+                  │
+Telegram account ─┘
+     (следующий этап)</pre>
+<p><strong>Web CRM является основным продуктом, Telegram — каналом поступления данных.</strong></p>
+
+<h3>Подключение обычного Telegram</h3>
+<p>Этот пункт не включён в текущий MVP. Для него предусмотрен отдельный интеграционный слой на базе MTProto/Pyrogram: входящие сообщения подключённого Telegram-аккаунта нормализуются в ту же сущность Lead и передаются через существующий API.</p>
+
+<h3>Что сознательно оставлено за рамками MVP</h3>
+<p>Авторизация и роли пользователей, воронка продаж, задачи, история изменений, сложная аналитика и другие Enterprise-функции.</p>
+<p>Главная цель — сначала проверить основной рабочий контур: <strong>получение лида → сохранение → тег → работа с лидом в CRM.</strong></p>
+
+<h2>2. Как делал</h2>
+<p>Сначала определил минимальный продуктовый контур и структуру данных, затем собрал backend API и PostgreSQL, после этого подключил Telegram-бота и Web CRM. В конце связал всё в единый сценарий и проверил работу через живой сервер.</p>
+
+<div class="grid">
+<div class="card"><strong>Стек</strong><ul>
+<li>Python 3.12</li><li>FastAPI</li><li>PostgreSQL</li><li>psycopg</li><li>aiogram</li><li>HTML / CSS / JavaScript</li><li>Nginx</li><li>systemd</li>
+</ul></div>
+<div class="card"><strong>Архитектурное решение</strong><p>Для MVP сознательно не использовал ORM и frontend-фреймворк: прямой SQL и обычный JavaScript позволили быстрее собрать прозрачный рабочий контур без лишних слоёв.</p></div>
+</div>
+
+<h3>AI-инструменты</h3>
+<p>ИИ использовался как инструмент разработки: для генерации и доработки отдельных частей кода, поиска ошибок, проверки архитектурных решений и ускорения итераций. Финальные решения по структуре MVP, API, модели данных и пользовательскому сценарию принимались в процессе самостоятельной разработки и проверки работающего проекта.</p>
+
+<h3>Что сделал бы дальше</h3>
+<ol>
+<li>подключил бы обычные Telegram-аккаунты через MTProto;</li>
+<li>связал бы повторные сообщения пользователя с существующим лидом по <code>telegram_id</code>;</li>
+<li>добавил бы статусы лида и простую воронку;</li>
+<li>добавил бы историю коммуникации;</li>
+<li>добавил бы уведомления менеджеру о новых лидах.</li>
+</ol>
+
+<h2>Рабочий MVP</h2>
+<div class="card links">
+<p><strong>CRM:</strong> <a href="http://107.189.18.133/">http://107.189.18.133/</a></p>
+<p><strong>Telegram:</strong> <a href="https://t.me/minicrm_leads_bot">@minicrm_leads_bot</a></p>
+<p><strong>GitHub:</strong> <a href="https://github.com/purpleGLXCODE/minicrm">github.com/purpleGLXCODE/minicrm</a></p>
+</div>
+
+<footer>
+MiniCRM · тестовое задание
+</footer>
+</main>
+</body>
+</html>
