@@ -8,6 +8,8 @@ from .database import all, one, sql
 
 router = APIRouter(prefix="/api")
 
+sql("ALTER TABLE leads ADD COLUMN IF NOT EXISTS telegram_id BIGINT")
+
 
 LEAD_SELECT = """
     SELECT
@@ -16,6 +18,7 @@ LEAD_SELECT = """
         l.contact,
         l.request,
         l.source,
+        l.telegram_id,
         l.created_at,
         COALESCE(
             (
@@ -47,18 +50,24 @@ def get_lead(lead_id: int):
 @router.post("/leads")
 def add_lead(data: dict):
     lead = one("""
-        INSERT INTO leads (name, contact, request, source, created_at)
-        VALUES (%s, %s, %s, %s, %s)
-        RETURNING id, name, contact, request, source, created_at
+        INSERT INTO leads (name, contact, request, source, telegram_id, created_at)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        RETURNING id, name, contact, request, source, telegram_id, created_at
     """, [
         data["name"],
         data["contact"],
         data["request"],
         data.get("source", "manual"),
+        data.get("telegram_id"),
         int(time.time())
     ])
 
-    for tag_name in data.get("tags", []):
+    tag_names = data.get("tags", []).copy()
+
+    if "🆕 Новый" not in tag_names:
+        tag_names.append("🆕 Новый")
+
+    for tag_name in tag_names:
         tag = one("""
             INSERT INTO tags (name)
             VALUES (%s)
