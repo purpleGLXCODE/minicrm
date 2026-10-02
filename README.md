@@ -55,52 +55,6 @@ Web — главный интерфейс. Bot — интеграционный 
 - HTML / CSS / JavaScript
 - Nginx
 
-### Почему без ORM
-
-Используем прямой PostgreSQL через **psycopg**.
-
-SQLAlchemy, Alembic, asyncpg и другие дополнительные слои сознательно не используются: для этого MVP они не дают необходимой ценности и только увеличивают объём проекта.
-
-Принцип: **минимум кода и зависимостей, максимум рабочего контура.**
-
-## База данных
-
-Всего 3 таблицы.
-
-### leads
-
-- id — BIGSERIAL PK
-- name — VARCHAR(150)
-- contact — VARCHAR(255)
-- request — TEXT
-- source — VARCHAR(50)
-- created_at — BIGINT, Unix timestamp
-
-### tags
-
-- id — BIGSERIAL PK
-- name — VARCHAR(50), UNIQUE
-
-### lead_tags
-
-- lead_id — FK → leads.id
-- tag_id — FK → tags.id
-- PRIMARY KEY (lead_id, tag_id)
-
-Никаких users, roles, pipelines, activities, audit logs и прочих сущностей в MVP нет.
-
-## API
-
-Планируем минимальный REST API:
-
-- GET /api/leads
-- GET /api/leads/{id}
-- POST /api/leads
-- POST /api/leads/{id}/tags
-- DELETE /api/leads/{id}/tags/{tag}
-- GET /api/tags
-- GET /api/leads?tag=hot
-
 ## Структура
 
 ```
@@ -132,16 +86,6 @@ minicrm/
 ## Deployment
 
 Для текущего MVP используется обычный запуск Python + Nginx. Docker-файлы остаются для воспроизводимой упаковки проекта, но на небольшом VPS Docker не обязателен.
-
-## Definition of Done
-
-1. Открыть CRM.
-2. Добавить лид вручную.
-3. Увидеть его в списке.
-4. Добавить тег.
-5. Отфильтровать по тегу.
-6. Отправить данные боту.
-7. Увидеть созданный ботом лид в CRM.
 
 ## Принцип разработки
 
