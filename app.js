@@ -10,10 +10,12 @@ const DEFAULT_TAGS = ["🔥 Горячий", "🆕 Новый", "🤖 AI"];
 
 document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("leadForm").addEventListener("submit", saveLead);
-    await loadTags();
-    await ensureDefaultTags();
-    await loadTags();
+
+    // Leads are the primary data. Load them first so the table never waits for tags.
     await loadLeads();
+
+    // Default tags are UI setup, not a prerequisite for showing leads.
+    ensureDefaultTags().then(loadTags);
 });
 
 async function loadLeads() {
@@ -36,6 +38,7 @@ async function loadTags() {
     }
 
     state.tags = await response.json();
+    renderToolbar();
 }
 
 async function ensureDefaultTags() {
@@ -341,6 +344,6 @@ function escapeHtml(value) {
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
+        .replaceAll("\"", "&quot;")
         .replaceAll("'", "&#039;");
 }
